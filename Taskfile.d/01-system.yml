@@ -1,0 +1,61 @@
+version: '3'
+
+tasks:
+  default:
+    cmds:
+      - task: ca-certificates
+      - task: set-rootpass
+      - task: set-hostname
+      - task: set-keymap
+      - task: set-timezone
+      - task: add-extras
+      - task: set-motd
+      - task: enable-colorprompt
+      - task: ll-alias
+  ca-certificates:
+    cmds:
+      - task: addpkgs
+        vars: {PKGS: "ca-certificates alpine-conf"}
+      - update-ca-certificates
+  set-rootpass:
+    cmds:
+      - echo "root:$ROOT_PASS" | chpasswd
+  set-hostname:
+    cmds:
+      - setup-hostname -n $TARGET_HOSTNAME
+      - echo "127.0.0.1    $TARGET_HOSTNAME $TARGET_HOSTNAME.localdomain" > /etc/hosts
+  set-keymap:
+    cmds:
+      - setup-keymap us us
+  set-timezone:
+    cmds:
+      - task: addpkgs
+        vars: {PKGS: "chrony tzdata"}
+      - setup-timezone -z $TARGET_TIMEZONE
+  add-extras:
+    cmds:
+      - task: addpkgs
+        vars: {PKGS: "vim htop curl wget bash bash-completion findutils openrc busybox-initscripts avahi-tools bind-tools"}
+      - sed -i 's/\/bin\/ash/\/bin\/bash/g' /etc/passwd
+  set-motd:
+    cmds:
+      - |
+        cat <<EOF > /etc/motd
+
+        Welcome to Alpine!
+        
+        EOF
+  enable-colorprompt:
+    cmds:
+      - mv /etc/profile.d/color_prompt.sh.disabled /etc/profile.d/color_prompt.sh
+    preconditions:
+      - test -f /etc/profile.d/color_prompt.sh.disabled
+  ll-alias:
+    cmds:
+      - |
+        cat <<EOF > /etc/profile.d/ll.sh
+        alias ll="ls -l"
+        EOF
+  addpkgs:
+    cmds:
+      - apk add {{ .PKGS }}

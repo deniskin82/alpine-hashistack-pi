@@ -1,0 +1,14 @@
+---
+version: '3'
+
+tasks:
+  install-extra-alpine:
+    desc: Install extra packages on Alpine
+    cmds:
+      - apk update
+      - apk add --no-cache dosfstools xxd util-linux curl
+  install-extra-ubuntu:
+    desc: Install extra packages on Ubuntu
+    cmds:
+      - apt-get update
+      - apt-get install -y dosfstools xxd util-linux curl

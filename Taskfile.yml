@@ -1,0 +1,133 @@
+version: '3'
+
+vars:
+  OUTPUT_IMG: '/dist/target.img'
+  ALPINE_DIR: '/alpine'
+  ALPINE_BRANCH: '{{default "v3.16" .ALPINE_BRANCH}}'
+  ALPINE_MIRROR: '{{default "http://dl-cdn.alpinelinux.org/alpine" .ALPINE_MIRROR}}'
+  ALPINE_CHROOT_INSTALL: 'https://raw.githubusercontent.com/alpinelinux/alpine-chroot-install/master/alpine-chroot-install'
+  ROOT_FSOPTS: '^has_journal,^64bit'
+  ARCH: '{{default "aarch64" .ARCH}}'
+  OS_DISTRO:
+    sh: source /etc/os-release && echo $ID
+
+includes:
+  dist: ./tasks/pkgs_{{OS}}.yml
+
+tasks:
+  default:
+    cmds:
+      # - env
+      - task: dist:install-extra-{{.OS_DISTRO}}
+      - task: create-disk
+      - task: create-partitions
+      - task: format-partitions
+      - task: mount-partitions
+      - task: alpine-chroot-install
+      - task: cleanup
+      - task: umount-partitions
+      - task: zero-root-partition
+      - task: destroy-loopdevice
+      - task: compress-image
+
+  create-disk:
+    desc: Create a target image to work on
+    cmds:
+      - task: mkdir
+        vars: {FOLDER: "dist"}
+      - task: mkdir
+        vars: {FOLDER: "/dist"}
+      - rm -Rf "{{.OUTPUT_IMG}}"
+      - truncate -s 2G "{{.OUTPUT_IMG}}"
+
+  create-partitions:
+    desc: Create Boot and Root partitions
+    silent: false
+    ignore_error: true
+    status:
+      - sfdisk -d "{{.OUTPUT_IMG}}" -l | grep 'type=83'
+    cmds:
+      - |
+        cat << EOF | sfdisk "{{.OUTPUT_IMG}}"
+        label: dos
+        start=2048,size=512M,type=0c,bootable,
+        type=83,
+        EOF
+
+  format-partitions:
+    desc: Create filesystems for Boot and Root partitions
+    vars:
+      LOOP_DEV:
+        sh: losetup --partscan --show --find "{{.OUTPUT_IMG}}"
+      BOOT_DEV: "{{.LOOP_DEV}}p1"
+      ROOT_DEV: "{{.LOOP_DEV}}p2"
+    cmds:
+      - mkfs.fat -F32 -n ALPINE "{{.BOOT_DEV}}"
+      - mkfs.ext4 -q -L ROOT -O '{{.ROOT_FSOPTS}}' "{{.ROOT_DEV}}"
+
+  mount-partitions:
+    desc: Assign partitions to a loop device
+    vars:
+      LOOP_DEV:
+        sh: losetup -n -O NAME -j "{{.OUTPUT_IMG}}"
+      BOOT_DEV: "{{.LOOP_DEV}}p1"
+      ROOT_DEV: "{{.LOOP_DEV}}p2"
+    cmds:
+      - task: mkdir
+        vars: {FOLDER: "{{.ALPINE_DIR}}"}
+      - mount --make-private "{{.ROOT_DEV}}" "{{.ALPINE_DIR}}"
+      - task: mkdir
+        vars: {FOLDER: "{{.ALPINE_DIR}}/boot"}
+      - mount --make-private "{{.BOOT_DEV}}" "{{.ALPINE_DIR}}/boot"
+
+  alpine-chroot-install:
+    desc: Install Alpine Linux under chroot
+    cmds:
+      - curl {{.ALPINE_CHROOT_INSTALL}} | sh -s -- -a {{.ARCH}} -b {{.ALPINE_BRANCH}} -m {{.ALPINE_MIRROR}} -d {{.ALPINE_DIR}}
+      - cp -R bootstrap Taskfile.d Taskfile.hashistack.yml {{.ALPINE_DIR}}/
+      - sh {{.ALPINE_DIR}}/enter-chroot run-parts /bootstrap/
+      - sh {{.ALPINE_DIR}}/enter-chroot task -v -t /Taskfile.hashistack.yml
+
+  cleanup:
+    desc: Do some cleanup under chroot
+    cmds:
+      - rm -rf {{.ALPINE_DIR}}/var/lib/apt/lists/*
+      - rm -rf {{.ALPINE_DIR}}/var/cache/apk/*
+      - rm -rf {{.ALPINE_DIR}}/root/*
+      - rm -rf {{.ALPINE_DIR}}/tmp/*
+      - rm -rf {{.ALPINE_DIR}}/bootstrap/ {{.ALPINE_DIR}}/Taskfile.*
+      - rm -f {{.ALPINE_DIR}}/env.sh {{.ALPINE_DIR}}/etc/resolv.conf {{.ALPINE_DIR}}/enter-chroot {{.ALPINE_DIR}}/destroy
+      - find {{.ALPINE_DIR}} -iname '*-' -delete
+      - find {{.ALPINE_DIR}} -iname '*~' -delete
+      - dd if=/dev/zero of={{.ALPINE_DIR}}/EMPTY bs=1M | true
+      - rm -vf {{.ALPINE_DIR}}/EMPTY
+      - sync
+
+  zero-root-partition:
+    desc: Zeroing Root partition
+    vars:
+      LOOP_DEV:
+        sh: losetup -n -O NAME -j "{{.OUTPUT_IMG}}"
+      ROOT_DEV: "{{.LOOP_DEV}}p2"
+    cmds:
+      - zerofree -v {{.ROOT_DEV}}
+
+  umount-partitions:
+    cmds:
+      - umount -lf {{.ALPINE_DIR}}
+
+  destroy-loopdevice:
+    vars:
+      LOOP_DEV:
+        sh: losetup -n -O NAME -j "{{.OUTPUT_IMG}}"
+    cmds:
+      - losetup -d {{.LOOP_DEV}}
+
+  compress-image:
+    desc: Create compressed target image
+    cmds:
+      - pigz -c "{{.OUTPUT_IMG}}" > "dist/alpine-rpi-{{.ALPINE_BRANCH}}-{{.ARCH}}.img.gz"
+
+  mkdir:
+    cmds:
+      - mkdir -p {{.FOLDER}}

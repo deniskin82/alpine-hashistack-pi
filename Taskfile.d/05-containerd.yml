@@ -1,0 +1,17 @@
+version: '3'
+tasks:
+  default:
+    cmds:
+      - task: add-extras
+      - task: enable-containerd
+  add-extras:
+    cmds:
+      - task: addpkgs
+        vars: {PKGS: "containerd containerd-openrc"}
+  enable-containerd:
+    cmds:
+      - rc-update add containerd boot
+
+  addpkgs:
+    cmds:
+      - apk add {{ .PKGS }}

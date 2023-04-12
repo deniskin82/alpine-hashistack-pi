@@ -1,0 +1,87 @@
+version: '3'
+vars:
+  ARCH: '{{default "aarch64" .ARCH}}'
+tasks:
+  default:
+    cmds:
+      - task: install-kernel
+      - task: set-cmdline
+      - task: set-config
+      - task: set-usercfg
+      - task: set-fstab
+      - task: set-sysctl
+      - task: set-modules-i2c
+
+  install-kernel:
+    vars:
+      RPI4:
+        sh: \[[ "{{ .ARCH }}" == "aarch64" ]] && echo 'linux-rpi4' || echo ''
+    description: install kernel
+    cmds:
+      - apk add linux-rpi linux-firmware-brcm raspberrypi-bootloader {{ .RPI4 }}
+  set-cmdline:
+    cmds:
+      - echo "{{ .SETTINGS }}" >/boot/cmdline.txt
+    vars:
+      SETTINGS: modules=loop,squashfs,sd-mod,usb-storage root=LABEL=ROOT rw rootfstype=ext4 elevator=deadline fsck.repair=yes console=tty1 selinux=0 rootwait quiet audit=0 consoleblank=30 hdmi_blanking=1 hdmi_force_hotplug=1 hdmi_group=2 hdmi_drive=2
+  set-config:
+    vars:
+      ARM64:
+        sh: \[[ "{{ .ARCH }}" == "aarch64" ]] && echo 1 || echo 0
+    cmds:
+      - |
+        cat <<EOF >/boot/config.txt
+        [pi0]
+        kernel=vmlinuz-rpi
+        initramfs initramfs-rpi
+        [pi02]
+        kernel=vmlinuz-rpi
+        initramfs initramfs-rpi
+        [pi3]
+        kernel=vmlinuz-rpi
+        initramfs initramfs-rpi
+        [pi3+]
+        kernel=vmlinuz-rpi
+        initramfs initramfs-rpi
+        [pi4]
+        enable_gic=1
+        # Enable DRM VC4 V3D driver on top of the dispmanx display stack
+        # dtoverlay=vc4-fkms-v3d
+        # max_framebuffers=2
+        kernel=vmlinuz-rpi4
+        initramfs initramfs-rpi4
+        [all]
+        gpu_mem=16
+        arm_64bit={{ .ARM64 }}
+        enable_uart=1
+        dtparam=audio=on
+        include usercfg.txt
+        EOF
+  set-usercfg:
+    cmds:
+      - |        
+        cat <<EOF > /boot/usercfg.txt
+        dtparam=i2c=on
+        EOF
+  set-fstab:
+    cmds:
+      - |
+        cat <<EOF > /etc/fstab
+        LABEL=ALPINE    /boot           vfat    defaults          0       2
+        LABEL=ROOT      /               ext4    defaults,noatime  0       1
+        EOF
+  set-sysctl:
+    cmds:
+      - |
+        cat <<EOF >> /etc/sysctl.conf
+        vm.vfs_cache_pressure=500
+        vm.swappiness=100
+        vm.dirty_background_ratio=1
+        vm.dirty_ratio=50
+        EOF
+  set-modules-i2c:
+    cmds:
+      - |
+        cat <<EOF > /etc/modules-load.d/i2c.conf
+        i2c-dev
+        EOF

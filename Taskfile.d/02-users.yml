@@ -1,0 +1,54 @@
+version: '3'
+tasks:
+  default:
+    cmds:
+      - task: add-sudo
+      - task: add-groups
+      - task: create-user
+  add-sudo:
+    cmds:
+      - task: addpkgs
+        vars: {PKGS: "sudo"}
+  add-groups:
+    cmds:
+      - task: addgroup
+        vars: {GRP: "spi"}
+      - task: addgroup
+        vars: {GRP: "i2c"}
+      - task: addgroup
+        vars: {GRP: "gpio"}
+  create-user:
+    vars:
+      GROUPS: |
+        adm
+        dialout
+        cdrom
+        audio
+        users
+        video
+        games
+        input
+        tty
+        gpio
+        spi
+        i2c
+        netdev
+    cmds:
+      - adduser -s /bin/ash -D $FIRST_USER_NAME
+      - |
+        {{range ( .GROUPS | trim | splitLines ) -}}
+        adduser $FIRST_USER_NAME {{.}}
+        {{end -}}
+      - echo "$FIRST_USER_NAME:$FIRST_USER_PASS" | chpasswd
+      - |
+        cat <<EOF >> /etc/sudoers
+        $FIRST_USER_NAME ALL=NOPASSWD: ALL
+        EOF
+  addpkgs:
+    cmds:
+      - apk add {{ .PKGS }}
+  addgroup:
+    cmds:
+      - addgroup --system "{{ .GRP }}"
+    status:
+      - getent group "{{ .GRP }}" >/dev/null

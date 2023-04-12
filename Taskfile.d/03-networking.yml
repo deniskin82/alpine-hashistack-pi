@@ -1,0 +1,47 @@
+version: '3'
+tasks:
+  default:
+    cmds:
+      - task: add-extras
+      - task: set_wpa_supplicant
+      - task: set_network_interfaces
+      - task: set_bluetooth
+  add-extras:
+    cmds: 
+      - task: addpkgs
+        vars: {PKGS: "wpa_supplicant wireless-tools wireless-regdb iw dbus avahi bluez bluez-deprecated"}
+  set_wpa_supplicant:
+    cmds:
+      - sed -i 's/wpa_supplicant_args=\"/wpa_supplicant_args=\" -u -Dwext,nl80211/' /etc/conf.d/wpa_supplicant
+      - echo -e 'brcmfmac' >> /etc/modules
+      - |
+        cat <<EOF > /boot/wpa_supplicant.conf
+        network={
+        ssid="SSID"
+        psk="PASSWORD"
+        }
+        EOF
+      - ln -s /boot/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
+  set_network_interfaces:
+    cmds:
+      - |
+        cat <<EOF > /etc/network/interfaces
+        auto lo
+        iface lo inet loopback
+
+        auto eth0
+        iface eth0 inet dhcp
+
+        auto wlan0
+        iface wlan0 inet dhcp
+          up iwconfig wlan0 power off
+
+        hostname $TARGET_HOSTNAME
+        EOF
+  set_bluetooth:
+    cmds:
+      - sed -i '/bcm43xx/s/^#//' /etc/mdev.conf
+
+  addpkgs:
+    cmds:
+      - apk add {{ .PKGS }}
