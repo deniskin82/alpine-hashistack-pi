@@ -86,7 +86,7 @@ tasks:
       - curl {{.ALPINE_CHROOT_INSTALL}} | sh -s -- -a {{.ARCH}} -b {{.ALPINE_BRANCH}} -m {{.ALPINE_MIRROR}} -d {{.ALPINE_DIR}}
       - cp -R bootstrap Taskfile.d Taskfile.hashistack.yml {{.ALPINE_DIR}}/
       - sh {{.ALPINE_DIR}}/enter-chroot run-parts /bootstrap/
-      - sh {{.ALPINE_DIR}}/enter-chroot task -v -t /Taskfile.hashistack.yml
+      - sh {{.ALPINE_DIR}}/enter-chroot task -t /Taskfile.hashistack.yml
 
   cleanup:
     desc: Do some cleanup under chroot
