@@ -18,7 +18,7 @@ tasks:
         sh: \[[ "{{ .ARCH }}" == "aarch64" ]] && echo 'linux-rpi4' || echo ''
     description: install kernel
     cmds:
-      - apk add linux-rpi linux-firmware-brcm raspberrypi-bootloader {{ .RPI4 }}
+      - apk add linux-rpi linux-firmware-brcm raspberrypi-bootloader raspberrypi-bootloader-cutdown {{ .RPI4 }}
   set-cmdline:
     cmds:
       - echo "{{ .SETTINGS }}" >/boot/cmdline.txt
