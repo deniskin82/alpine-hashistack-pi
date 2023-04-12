@@ -1,0 +1,20 @@
+version: '3'
+vars:
+  HASHI_APP: 'nomad'
+  APP_VERSION: 'latest'
+tasks:
+  default:
+    cmds:
+      - task: download-app
+      - task: extract-app
+  
+  download-app:
+    vars:
+      HASHI_URL:
+        sh: curl -s "https://api.releases.hashicorp.com/v1/releases/{{.HASHI_APP}}/{{.APP_VERSION}}" | jq -Mr '.builds[] | select(.arch == "{{ARCH}}" and .os == "{{OS}}") | .url'
+    cmds:
+      - curl -s {{.HASHI_URL}} -o /tmp/{{.HASHI_APP}}.zip
+  extract-app:
+    cmds:
+      - unzip -q -d /usr/bin/ /tmp/{{.HASHI_APP}}.zip {{.HASHI_APP}}
+      - rm -f /tmp/{{.HASHI_APP}}.zip
