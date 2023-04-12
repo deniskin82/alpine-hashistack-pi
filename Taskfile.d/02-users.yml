@@ -5,6 +5,7 @@ tasks:
       - task: add-sudo
       - task: add-groups
       - task: create-user
+      - task: assign-groups
   add-sudo:
     cmds:
       - task: addpkgs
@@ -18,6 +19,14 @@ tasks:
       - task: addgroup
         vars: {GRP: "gpio"}
   create-user:
+    cmds:
+      - adduser -s /bin/ash -D $FIRST_USER_NAME
+      - echo "$FIRST_USER_NAME:$FIRST_USER_PASS" | chpasswd
+      - |
+        cat <<EOF >> /etc/sudoers
+        $FIRST_USER_NAME ALL=NOPASSWD: ALL
+        EOF
+  assign-groups:
     vars:
       GROUPS: |
         adm
@@ -34,16 +43,11 @@ tasks:
         i2c
         netdev
     cmds:
-      - adduser -s /bin/ash -D $FIRST_USER_NAME
       - |
         {{range ( .GROUPS | trim | splitLines ) -}}
         adduser $FIRST_USER_NAME {{.}}
         {{end -}}
-      - echo "$FIRST_USER_NAME:$FIRST_USER_PASS" | chpasswd
-      - |
-        cat <<EOF >> /etc/sudoers
-        $FIRST_USER_NAME ALL=NOPASSWD: ALL
-        EOF
+
   addpkgs:
     cmds:
       - apk add {{ .PKGS }}
