@@ -51,7 +51,6 @@ tasks:
         wpa_supplicant
         wpa_cli
     cmds:
-      - ls -l /etc/init.d/
       - |
         {{range ( .SRVS | trim | splitLines ) -}}
         rc-update add {{.}} default
