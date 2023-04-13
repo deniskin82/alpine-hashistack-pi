@@ -25,6 +25,7 @@ tasks:
       - task: mount-partitions
       - task: alpine-chroot-install
       - task: cleanup
+      - task: defrag-root-partition
       - task: umount-partitions
       - task: zero-root-partition
       - task: destroy-loopdevice
@@ -111,6 +112,15 @@ tasks:
       ROOT_DEV: "{{.LOOP_DEV}}p2"
     cmds:
       - zerofree -v {{.ROOT_DEV}}
+
+  defrag-root-partition:
+    desc: Defragment Root partition
+    vars:
+      LOOP_DEV:
+        sh: losetup -n -O NAME -j "{{.OUTPUT_IMG}}"
+      ROOT_DEV: "{{.LOOP_DEV}}p2"
+    cmds:
+      - e4defrag {{.ROOT_DEV}}
 
   umount-partitions:
     cmds:
