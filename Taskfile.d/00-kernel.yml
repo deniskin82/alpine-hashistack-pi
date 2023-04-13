@@ -32,9 +32,13 @@ tasks:
       - |
         cat <<EOF >/boot/config.txt
         [pi0]
+        start_file=start_cd.elf
+        fixup_file=fixup_cd.dat
         kernel=vmlinuz-rpi
         initramfs initramfs-rpi
         [pi02]
+        start_file=start_cd.elf
+        fixup_file=fixup_cd.dat
         kernel=vmlinuz-rpi
         initramfs initramfs-rpi
         [pi3]
@@ -44,6 +48,8 @@ tasks:
         kernel=vmlinuz-rpi
         initramfs initramfs-rpi
         [pi4]
+        start_file=start4cd.elf
+        fixup_file=fixup4cd.dat
         enable_gic=1
         # Enable DRM VC4 V3D driver on top of the dispmanx display stack
         # dtoverlay=vc4-fkms-v3d
