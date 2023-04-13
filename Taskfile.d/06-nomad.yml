@@ -5,6 +5,7 @@ vars:
 tasks:
   default:
     cmds:
+      - task: add-extras
       - task: download-app
       - task: extract-app
   
@@ -16,5 +17,14 @@ tasks:
       - curl -s {{.HASHI_URL}} -o /tmp/{{.HASHI_APP}}.zip
   extract-app:
     cmds:
+      - ln -sf /lib/libc.so.6 /usr/lib/libresolv.so.2
       - unzip -q -d /usr/bin/ /tmp/{{.HASHI_APP}}.zip {{.HASHI_APP}}
       - rm -f /tmp/{{.HASHI_APP}}.zip
+  add-extras:
+    cmds:
+      - task: addpkgs
+        vars: {PKGS: "gcompat libc6-compat"}
+
+  addpkgs:
+    cmds:
+      - apk add {{ .PKGS }}
