@@ -6,24 +6,12 @@ tasks:
   default:
     cmds:
       - task: add-extras
-      - task: download-app
-      - task: extract-app
   
-  download-app:
-    vars:
-      HASHI_URL:
-        sh: curl -s "https://api.releases.hashicorp.com/v1/releases/{{.HASHI_APP}}/{{.APP_VERSION}}" | jq -Mr '.builds[] | select(.arch == "{{ARCH}}" and .os == "{{OS}}") | .url'
-    cmds:
-      - curl -s {{.HASHI_URL}} -o /tmp/{{.HASHI_APP}}.zip
-  extract-app:
-    cmds:
-      - ln -sf /lib/libc.so.6 /usr/lib/libresolv.so.2
-      - unzip -q -d /usr/bin/ /tmp/{{.HASHI_APP}}.zip {{.HASHI_APP}}
-      - rm -f /tmp/{{.HASHI_APP}}.zip
   add-extras:
     cmds:
       - task: addpkgs
-        vars: {PKGS: "gcompat libc6-compat"}
+        vars: {PKGS: "--no-cache nomad cni-plugins --repository http://dl-cdn.alpinelinux.org/alpine/edge/community"}
+      - nomad version
 
   addpkgs:
     cmds:
