@@ -6,12 +6,22 @@ tasks:
   default:
     cmds:
       - task: add-extras
-  
+      - task: patch-initd
+      - task: patch-confd
+      - task: enable-nomad
+  enable-nomad:
+    cmds:
+      - rc-update add nomad  
   add-extras:
     cmds:
       - task: addpkgs
         vars: {PKGS: "--no-cache nomad cni-plugins --repository http://dl-cdn.alpinelinux.org/alpine/edge/community"}
-      - nomad version
+  patch-initd:
+    cmds:
+      - sed -i 's/docker/containerd/' /etc/init.d/nomad
+  patch-confd:
+    cmds:
+      - sed -i '/driver.denylist/s/#//;s/java,raw_exec/java,docker/;/UI/{n;s/#//;}' /etc/nomad.d/server.hcl
 
   addpkgs:
     cmds:
