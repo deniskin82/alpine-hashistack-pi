@@ -1,0 +1,17 @@
+version: '3'
+tasks:
+  default:
+    cmds:
+      - task: add-extras
+      - task: enable-consul
+  enable-nomad:
+    cmds:
+      - rc-update add consul  
+  add-extras:
+    cmds:
+      - task: addpkgs
+        vars: {PKGS: "--no-cache consul --repository http://dl-cdn.alpinelinux.org/alpine/edge/community"}
+
+  addpkgs:
+    cmds:
+      - apk add {{ .PKGS }}

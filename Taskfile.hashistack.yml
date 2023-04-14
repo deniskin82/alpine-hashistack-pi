@@ -9,7 +9,8 @@ includes:
   networking: /Taskfile.d/03-networking.yml
   services: /Taskfile.d/04-services.yml
   containerd: /Taskfile.d/05-containerd.yml
-  nomad: /Taskfile.d/06-nomad.yml
+  consul: /Taskfile.d/06-consul.yml
+  nomad: /Taskfile.d/07-nomad.yml
   firstboot: /Taskfile.d/99-first-boot.yml
 
 tasks:
@@ -22,5 +23,6 @@ tasks:
       - task: networking
       - task: services
       - task: containerd
+      - task: consul
       - task: nomad
       - task: firstboot

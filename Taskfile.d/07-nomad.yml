@@ -1,7 +1,4 @@
 version: '3'
-vars:
-  HASHI_APP: 'nomad'
-  APP_VERSION: '1.5.3'
 tasks:
   default:
     cmds:
@@ -18,7 +15,7 @@ tasks:
         vars: {PKGS: "--no-cache nomad cni-plugins --repository http://dl-cdn.alpinelinux.org/alpine/edge/community"}
   patch-initd:
     cmds:
-      - sed -i 's/docker/containerd/' /etc/init.d/nomad
+      - sed -i 's/docker/containerd consul/' /etc/init.d/nomad
   patch-confd:
     cmds:
       - sed -i '/driver.denylist/s/#//;s/java,raw_exec/java,docker/;/UI/{n;s/#//;}' /etc/nomad.d/server.hcl
