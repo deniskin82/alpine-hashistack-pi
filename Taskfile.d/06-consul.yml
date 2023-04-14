@@ -4,7 +4,7 @@ tasks:
     cmds:
       - task: add-extras
       - task: enable-consul
-  enable-nomad:
+  enable-consul:
     cmds:
       - rc-update add consul  
   add-extras:
