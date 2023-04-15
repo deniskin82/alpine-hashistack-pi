@@ -16,9 +16,11 @@ tasks:
         vars: {PKGS: "--no-cache nomad cni-plugins --repository http://dl-cdn.alpinelinux.org/alpine/edge/community"}
   patch-initd:
     cmds:
+      - sed "s/NOMAD_DATADIR/${NOMAD_DATADIR}/" -i ${TASKD_FILES}/nomad/nomad.initd
       - install -m755 -D ${TASKD_FILES}/nomad/nomad.initd /etc/init.d/nomad
   patch-confd:
     cmds:
+      - sed "s/NOMAD_DATADIR/${NOMAD_DATADIR}/" -i ${TASKD_FILES}/nomad/server.hcl
       - install -m640 -o root -g root -D ${TASKD_FILES}/nomad/server.hcl /etc/nomad.d/server.hcl
       - install -m644 -D ${TASKD_FILES}/nomad/nomad.confd /etc/conf.d/nomad
   containerd-driver:

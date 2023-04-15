@@ -4,6 +4,8 @@ description="An easy-to-use, flexible, and performant workload orchestrator"
 description_healthcheck="Check health status"
 description_reload="Reload configuration"
 
+: ${DATA_DIR:=NOMAD_DATADIR}
+
 extra_started_commands="healthcheck reload"
 
 command="/usr/sbin/${RC_SVCNAME}"
@@ -24,6 +26,7 @@ depend() {
 
 start_pre() {
 	checkpath -f -m 0644 -o "$command_user" "$output_log" "$error_log"
+	checkpath -d -m 2750 -o "$command_user" $DATA_DIR
 }
 
 healthcheck() {

@@ -1,4 +1,4 @@
-data_dir             = "/data/nomad"
+data_dir             = "NOMAD_DATADIR"
 disable_update_check = true
 enable_syslog        = true
 plugin_dir           = "/usr/lib/nomad/plugins"

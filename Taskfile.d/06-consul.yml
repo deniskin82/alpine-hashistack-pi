@@ -3,6 +3,8 @@ tasks:
   default:
     cmds:
       - task: add-extras
+      - task: patch-initd
+      - task: patch-confd
       - task: enable-consul
   enable-consul:
     cmds:
@@ -11,6 +13,20 @@ tasks:
     cmds:
       - task: addpkgs
         vars: {PKGS: "--no-cache consul --repository http://dl-cdn.alpinelinux.org/alpine/edge/community"}
+  patch-initd:
+    cmds:
+      - sed -i "s/CONSUL_DATADIR/${CONSUL_DATADIR}/" ${TASKD_FILES}/consul/consul.initd
+      - install -m755 -D ${TASKD_FILES}/consul/consul.initd /etc/init.d/consul
+  patch-confd:
+    vars:
+      ENC_KEY:
+        sh: consul keygen
+    cmds:
+      - usermod -d /data/consul consul
+      - sed "s/ENCRYPT_KEY/{{.ENC_KEY}}/" -i ${TASKD_FILES}/consul/encrypt.json 
+      - sed "s/CONSUL_DATADIR/${CONSUL_DATADIR}/" -i ${TASKD_FILES}/consul/server.json
+      - install -m640 -o root -g consul -D ${TASKD_FILES}/consul/server.json /etc/consul.d/server.json
+      - install -m640 -o root -g consul -D ${TASKD_FILES}/consul/encrypt.json /etc/consul.d/encrypt.json
 
   addpkgs:
     cmds:
