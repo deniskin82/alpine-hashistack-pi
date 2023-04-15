@@ -1,10 +1,14 @@
 version: '3'
+vars:
+  DRIVER_VERSION: '0.9.3'
+  PLUGIN_DIR: '/usr/lib/nomad/plugins'
 tasks:
   default:
     cmds:
       - task: add-extras
       - task: patch-initd
       - task: patch-confd
+      - task: containerd-driver
       - task: enable-nomad
   enable-nomad:
     cmds:
@@ -15,10 +19,15 @@ tasks:
         vars: {PKGS: "--no-cache nomad cni-plugins --repository http://dl-cdn.alpinelinux.org/alpine/edge/community"}
   patch-initd:
     cmds:
-      - sed -i 's/docker/containerd consul/' /etc/init.d/nomad
+      - install -m755 -D files/nomad/nomad.initd /etc/init.d/nomad
   patch-confd:
     cmds:
-      - sed -i '/driver.denylist/s/#//;s/java,raw_exec/java,docker/;/UI/{n;s/#//;}' /etc/nomad.d/server.hcl
+      - install -m640 -o root -g root -D files/nomad/server.hcl /etc/nomad.d/server.hcl
+      - install -m644 -D files/nomad/nomad.confd /etc/conf.d/nomad
+  containerd-driver:
+    cmds:
+      - curl -sSL -o containerd-driver https://github.com/Roblox/nomad-driver-containerd/releases/download/v{{.DRIVER_VERSION}}/containerd-driver-arm64
+      - install -D containerd-driver {{.PLUGIN_DIR}}/containerd-driver
 
   addpkgs:
     cmds:
