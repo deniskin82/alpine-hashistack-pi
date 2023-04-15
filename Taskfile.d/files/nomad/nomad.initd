@@ -20,22 +20,22 @@ respawn_delay=10
 healthcheck_timer=60
 
 depend() {
-	need localmount net
-	after cgroups containerd consul firewall
+  need localmount net
+  after cgroups containerd consul firewall
 }
 
 start_pre() {
-	checkpath -f -m 0644 -o "$command_user" "$output_log" "$error_log"
-	checkpath -d -m 2750 -o "$command_user" $DATA_DIR
+  checkpath -f -m 0644 -o "$command_user" "$output_log" "$error_log"
+  checkpath -d -m 2750 -o "$command_user" $DATA_DIR
 }
 
 healthcheck() {
-	$command agent-info ${nomad_healthcheck_opts} > /dev/null 2>&1
+  $command agent-info ${nomad_healthcheck_opts} > /dev/null 2>&1
 }
 
 reload() {
-	start_pre \
-		&& ebegin "Reloading $RC_SVCNAME configuration" \
-		&& $supervisor "$RC_SVCNAME" --signal HUP
-	eend $?
+  start_pre \
+    && ebegin "Reloading $RC_SVCNAME configuration" \
+    && $supervisor "$RC_SVCNAME" --signal HUP
+  eend $?
 }

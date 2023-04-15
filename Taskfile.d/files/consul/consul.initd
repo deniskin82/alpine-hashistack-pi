@@ -23,29 +23,29 @@ respawn_delay=10
 healthcheck_timer=60
 
 depend() {
-	need localmount net
-	after firewall
+  need localmount net
+  after firewall
 }
 
 checkconfig() {
-	ebegin "Checking /etc/consul"
-	$command validate /etc/consul
-	eend $?
+  ebegin "Checking /etc/consul"
+  $command validate /etc/consul
+  eend $?
 }
 
 start_pre() {
-	checkconfig
-	checkpath -f -m 0640 -o "$command_user" "$output_log" "$error_log"
+  checkconfig
+  checkpath -f -m 0640 -o "$command_user" "$output_log" "$error_log"
   checkpath -d -m 2750 -o "$command_user" ${DATA_DIR}
 }
 
 healthcheck() {
-	$command config list -kind proxy-defaults
+  $command config list -kind proxy-defaults
 }
 
 reload() {
-	start_pre \
-		&& ebegin "Reloading $RC_SVCNAME configuration" \
-		&& supervise-daemon "$RC_SVCNAME" --signal HUP --pidfile "$pidfile"
-	eend $?
+  start_pre \
+    && ebegin "Reloading $RC_SVCNAME configuration" \
+    && supervise-daemon "$RC_SVCNAME" --signal HUP --pidfile "$pidfile"
+  eend $?
 }
