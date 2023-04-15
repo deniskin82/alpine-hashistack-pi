@@ -25,7 +25,7 @@ tasks:
       - task: mount-partitions
       - task: alpine-chroot-install
       - task: cleanup
-      - task: defrag-root-partition
+      # - task: defrag-root-partition
       - task: umount-partitions
       - task: zero-root-partition
       - task: destroy-loopdevice
