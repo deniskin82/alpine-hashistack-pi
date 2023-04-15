@@ -75,6 +75,7 @@ tasks:
         cat <<EOF > /etc/fstab
         LABEL=ALPINE    /boot           vfat    defaults          0       2
         LABEL=ROOT      /               ext4    defaults,noatime  0       1
+        LABEL=DATA      /data           ext4    defaults,noatime,nosuid  0       0
         EOF
   set-sysctl:
     cmds:
