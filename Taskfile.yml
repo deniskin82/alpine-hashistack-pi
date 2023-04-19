@@ -89,13 +89,13 @@ tasks:
   generate-nomad-key:
     cmds:
       - openssl rand -base64 32 > encrypt/nomad.key
-    generates:
-      - encrypt/nomad.key
+    status:
+      - test -f encrypt/nomad.key
   generate-consul-key:
     cmds:
       - openssl rand -base64 32 > encrypt/consul.key
-    generates:
-      - encrypt/consul.key
+    status:
+      - test -f encrypt/consul.key
 
   alpine-chroot-install:
     desc: Install Alpine Linux under chroot
