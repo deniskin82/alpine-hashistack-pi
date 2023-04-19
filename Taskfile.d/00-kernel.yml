@@ -23,7 +23,7 @@ tasks:
     cmds:
       - echo "{{ .SETTINGS }}" >/boot/cmdline.txt
     vars:
-      SETTINGS: modules=loop,squashfs,sd-mod,usb-storage root=LABEL=ROOT rw rootfstype=ext4 elevator=deadline fsck.repair=yes console=tty1 selinux=0 rootwait quiet audit=0 consoleblank=30 hdmi_blanking=1 hdmi_force_hotplug=1 hdmi_group=2 hdmi_drive=2
+      SETTINGS: modules=loop,squashfs,sd-mod,usb-storage root=LABEL=ROOT rw rootfstype=ext4 elevator=deadline fsck.repair=yes console=tty1 selinux=0 rootwait quiet audit=0 consoleblank=30 hdmi_blanking=1 hdmi_force_hotplug=1 hdmi_group=2 hdmi_drive=2 cgroup_enable=memory
   set-config:
     vars:
       ARM64:
