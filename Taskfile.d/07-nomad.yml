@@ -7,6 +7,7 @@ tasks:
       - task: patch-confd
       - task: containerd-driver
       - task: add-avahi-service
+      - task: add-cni-config
       - task: enable-nomad
   enable-nomad:
     cmds:
@@ -34,6 +35,9 @@ tasks:
   add-avahi-service:
     cmds:
       - install -m644 -D ${TASKD_FILES}/nomad/nomad.service /etc/avahi/services/nomad.service
+  add-cni-config:
+    cmds:
+      - install -m644 -D ${TASKD_FILES}/cni/10-nomad.conflist /etc/cni/net.d/10-nomad.conflist
 
   addpkgs:
     cmds:
