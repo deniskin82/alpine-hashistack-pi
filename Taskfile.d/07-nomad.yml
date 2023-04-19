@@ -22,7 +22,7 @@ tasks:
   patch-confd:
     vars:
       ENC_KEY:
-        sh: nomad operator gossip keyring generate
+        sh: cat /encrypt/nomad.key #nomad operator gossip keyring generate
     cmds:
       - sed "s@NOMAD_DATADIR@${NOMAD_DATADIR}@;s@ENCRYPT_KEY@{{.ENC_KEY}}@" -i ${TASKD_FILES}/nomad/server.hcl
       - install -m640 -o root -g root -D ${TASKD_FILES}/nomad/server.hcl /etc/nomad.d/server.hcl

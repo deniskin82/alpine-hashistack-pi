@@ -90,18 +90,18 @@ tasks:
     cmds:
       - openssl rand -base64 32 > encrypt/nomad.key
     generates:
-      - keys/nomad.key
+      - encrypt/nomad.key
   generate-consul-key:
     cmds:
       - openssl rand -base64 32 > encrypt/consul.key
     generates:
-      - keys/consul.key
+      - encrypt/consul.key
 
   alpine-chroot-install:
     desc: Install Alpine Linux under chroot
     cmds:
       - curl {{.ALPINE_CHROOT_INSTALL}} | sh -s -- -a {{.ARCH}} -b {{.ALPINE_BRANCH}} -m {{.ALPINE_MIRROR}} -d {{.ALPINE_DIR}}
-      - cp -R bootstrap Taskfile.d Taskfile.hashistack.yml {{.ALPINE_DIR}}/
+      - cp -R bootstrap encrypt Taskfile.d Taskfile.hashistack.yml {{.ALPINE_DIR}}/
       - sh {{.ALPINE_DIR}}/enter-chroot run-parts /bootstrap/
       - sh {{.ALPINE_DIR}}/enter-chroot task -t /Taskfile.hashistack.yml
 
