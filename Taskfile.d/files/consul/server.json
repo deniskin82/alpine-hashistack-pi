@@ -1,6 +1,7 @@
 {
   "data_dir": "CONSUL_DATADIR",
   "bind_addr": "{{ GetPrivateInterfaces | include \"network\" \"BIND_ADDR\" | attr \"address\" }}",
+  "client_addr": "0.0.0.0",
   "server": true,
   "bootstrap_expect": 1,
   "disable_update_check": true,
