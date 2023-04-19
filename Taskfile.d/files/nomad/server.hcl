@@ -37,5 +37,3 @@ plugin "containerd-driver" {
       stats_interval = "5s"
   }
 }
-
-disable_update_check = true
