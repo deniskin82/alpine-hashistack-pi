@@ -37,3 +37,7 @@ plugin "containerd-driver" {
       stats_interval = "5s"
   }
 }
+
+consul {
+  address = "127.0.0.1:8500"
+}
