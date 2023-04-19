@@ -23,6 +23,7 @@ tasks:
       - task: create-partitions
       - task: format-partitions
       - task: mount-partitions
+      - task: generate-keys
       - task: alpine-chroot-install
       - task: cleanup
       # - task: defrag-root-partition
@@ -80,6 +81,21 @@ tasks:
       - task: mkdir
         vars: {FOLDER: "{{.ALPINE_DIR}}/boot"}
       - mount --make-private "{{.BOOT_DEV}}" "{{.ALPINE_DIR}}/boot"
+
+  generate-keys:
+    cmds:
+      - task: generate-nomad-key
+      - task: generate-consul-key
+  generate-nomad-key:
+    cmds:
+      - openssl rand -base64 32 > encrypt/nomad.key
+    generates:
+      - keys/nomad.key
+  generate-consul-key:
+    cmds:
+      - openssl rand -base64 32 > encrypt/consul.key
+    generates:
+      - keys/consul.key
 
   alpine-chroot-install:
     desc: Install Alpine Linux under chroot
