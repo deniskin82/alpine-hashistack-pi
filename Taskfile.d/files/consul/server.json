@@ -1,6 +1,6 @@
 {
   "data_dir": "CONSUL_DATADIR",
-  "bind_addr": "{{ GetPrivateInterfaces | include \"network\" \"BIND_ADDR\" | attr \"address\" }}",
+  "bind_addr": "{{ GetInterfaceIP \"BIND_ETH\" }}",
   "client_addr": "0.0.0.0",
   "server": true,
   "bootstrap_expect": 1,

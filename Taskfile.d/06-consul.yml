@@ -25,7 +25,7 @@ tasks:
     cmds:
       - usermod -d ${CONSUL_DATADIR} consul
       - sed "s@ENCRYPT_KEY@{{.ENC_KEY}}@" -i ${TASKD_FILES}/consul/encrypt.json 
-      - sed "s@CONSUL_DATADIR@${CONSUL_DATADIR}@;s@BIND_ADDR@${BIND_ADDR}@" -i ${TASKD_FILES}/consul/server.json
+      - sed "s@CONSUL_DATADIR@${CONSUL_DATADIR}@;s@BIND_ETH@${BIND_ETH}@" -i ${TASKD_FILES}/consul/server.json
       - install -m640 -o root -g consul -D ${TASKD_FILES}/consul/server.json /etc/consul/server.json
       - install -m640 -o root -g consul -D ${TASKD_FILES}/consul/encrypt.json /etc/consul/encrypt.json
   add-avahi-service:
