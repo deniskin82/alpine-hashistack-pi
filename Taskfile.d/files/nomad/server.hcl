@@ -6,6 +6,7 @@ plugin_dir           = "/usr/lib/nomad/plugins"
 server {
   enabled          = true
   bootstrap_expect = 1
+  encrypt          = "ENCRYPT_KEY"
 }
 
 client {
