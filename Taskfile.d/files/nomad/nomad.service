@@ -2,7 +2,7 @@
 <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
 
 <service-group>
-  <name replace-wildcards="yes">Nomad on %h</name>
+  <name replace-wildcards="yes">nomad-%h</name>
   <service protocol="ipv4">
     <type>_nomad-http._tcp</type>
     <port>4646</port>
