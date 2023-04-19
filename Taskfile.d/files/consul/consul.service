@@ -2,8 +2,7 @@
 <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
 
 <service-group>
-  <name replace-wildcards="yes">Consul on %h</name>
-
+  <name replace-wildcards="yes">consul-%h</name>
   <service>
     <type>_consul-server._tcp</type>
     <port>8300</port>
