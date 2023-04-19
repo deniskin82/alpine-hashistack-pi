@@ -11,9 +11,9 @@ server {
 
 client {
   enabled = true
-
+  network_interface = "eth0"
   # CNI-related settings
-  cni_config_dir = "/etc/cni"
+  cni_config_dir = "/etc/cni/net.d"
   cni_path = "/usr/libexec/cni"
 
   options {
