@@ -6,6 +6,7 @@ tasks:
       - task: patch-initd
       - task: patch-confd
       - task: containerd-driver
+      - task: add-avahi-service
       - task: enable-nomad
   enable-nomad:
     cmds:
@@ -27,6 +28,9 @@ tasks:
     cmds:
       - curl -sSL -o containerd-driver https://github.com/Roblox/nomad-driver-containerd/releases/download/v${CONTAINERD_DRIVER_VERSION}/containerd-driver{{if eq ARCH "arm64"}}-{{ARCH}}{{end}}
       - install -D containerd-driver ${NOMAD_PLUGINS_DIR}/containerd-driver
+  add-avahi-service:
+    cmds:
+      - install -m644 -D ${TASKD_FILES}/nomad/nomad.service /etc/avahi/services/nomad.service
 
   addpkgs:
     cmds:
