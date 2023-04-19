@@ -22,8 +22,8 @@ job "nginx" {
 
         check {
           name     = "http port alive"
-          type     = "http"
-          path     = "/"
+          type     = "tcp"
+          port     = "http"
           interval = "30s"
           timeout  = "2s"
         }
