@@ -3,7 +3,7 @@ version: '3'
 vars:
   OUTPUT_IMG: '/dist/target.img'
   ALPINE_DIR: '/alpine'
-  ALPINE_BRANCH: '{{default "v3.16" .ALPINE_BRANCH}}'
+  ALPINE_BRANCH: '{{default "v3.17" .ALPINE_BRANCH}}'
   ALPINE_MIRROR: '{{default "http://dl-cdn.alpinelinux.org/alpine" .ALPINE_MIRROR}}'
   ALPINE_CHROOT_INSTALL: 'https://raw.githubusercontent.com/alpinelinux/alpine-chroot-install/master/alpine-chroot-install'
   ROOT_FSOPTS: '^has_journal,^64bit'

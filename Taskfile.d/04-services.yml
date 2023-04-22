@@ -6,12 +6,11 @@ tasks:
       - task: service-sysinit
       - task: service-boot
       - task: service-default
-      - task: setup-dev
       - task: service-shutdown
   add-extras:
     cmds:
       - task: addpkgs
-        vars: {PKGS: "eudev openssh haveged"}
+        vars: {PKGS: "openssh haveged"}
   service-sysinit:
     vars:
       SRVS: |
@@ -30,7 +29,7 @@ tasks:
         hostname
         bootmisc
         swclock
-        syslog
+        syslog-ng
         swap
     cmds:
       - |
@@ -55,9 +54,6 @@ tasks:
         {{range ( .SRVS | trim | splitLines ) -}}
         rc-update add {{.}} default
         {{end -}}
-  setup-dev:
-    cmds:
-      - setup-udev -n
   service-shutdown:
     vars:
       SRVS: |
