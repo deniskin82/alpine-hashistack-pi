@@ -62,7 +62,7 @@ job "dlna" {
 
       resources {
         cpu    = 1300
-        memory = 840
+        memory = 1000
       }
     }
   }
