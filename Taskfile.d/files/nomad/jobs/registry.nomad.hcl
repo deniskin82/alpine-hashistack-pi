@@ -42,7 +42,7 @@ job "docker-registry" {
 
     task "registry" {
       driver = "containerd-driver"
-      
+
       config {
         image = "registry:2.8.1"
         mounts = [{
