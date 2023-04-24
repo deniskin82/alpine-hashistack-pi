@@ -78,7 +78,7 @@ job "docker-registry" {
 
     task "ui" {
       driver = "containerd-driver"
-      
+      // https://github.com/Joxit/docker-registry-ui
       config {
         image = "joxit/docker-registry-ui:latest"
       //  command = "env"
