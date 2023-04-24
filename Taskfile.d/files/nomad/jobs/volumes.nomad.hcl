@@ -15,18 +15,9 @@ job "volumes" {
         data = <<EOH
 #!/bin/sh
 set -xe
-mkdir -v -m 777 -p /data/volumes/netdata_cache \
-  /data/volumes/netdata_data \
-  /data/volumes/docker_registry/data \
-  /data/volumes/docker_cache/data \
-  /data/volumes/jellyfin/cache \
-  /data/volumes/jellyfin/config
-chmod 0777 /data/volumes/netdata_cache \
-  /data/volumes/netdata_data \
-  /data/volumes/docker_registry/data \
-  /data/volumes/docker_cache/data \
-  /data/volumes/jellyfin/cache \
-  /data/volumes/jellyfin/config
+{{range tree "mount/data/volumes/"}}
+mkdir -v -m777 -p /data/volumes/./{{.Key}}
+chmod 0777 /data/volumes/./{{.Key}}{{end}}
 sleep 3
         EOH
 
@@ -35,6 +26,10 @@ sleep 3
       config {
         command = "/bin/sh"
         args = ["tmp/mkdirs.sh"]
+      }
+      resources {
+        cpu    = 100
+        memory = 64
       }
     }
   }
