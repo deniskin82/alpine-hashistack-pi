@@ -35,7 +35,7 @@ tasks:
   add-extras:
     cmds:
       - task: addpkgs
-        vars: {PKGS: "vim htop curl wget bash bash-completion findutils openrc syslog-ng avahi-tools bind-tools jq shadow iptables ip6tables"}
+        vars: {PKGS: "vim htop curl wget bash bash-completion findutils openrc syslog-ng avahi-tools bind-tools jq shadow iptables ip6tables cifs-utils"}
       - sed -i 's/\/bin\/ash/\/bin\/bash/g' /etc/passwd
   set-motd:
     cmds:
