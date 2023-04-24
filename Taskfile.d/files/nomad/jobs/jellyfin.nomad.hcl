@@ -60,8 +60,8 @@ job "dlna" {
       }
 
       resources {
-        cpu    = 500
-        memory = 640
+        cpu    = 900
+        memory = 740
       }
     }
   }
