@@ -21,6 +21,7 @@ job "dlna" {
       config {
         image = "docker.io/jellyfin/jellyfin:10.8.10"
         host_network = true
+        hostname = "jellyfin"
         mounts = [{
           type    = "bind"
           source  = "/data/volumes/jellyfin/config"
@@ -60,8 +61,8 @@ job "dlna" {
       }
 
       resources {
-        cpu    = 900
-        memory = 740
+        cpu    = 1300
+        memory = 840
       }
     }
   }
