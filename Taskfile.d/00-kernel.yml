@@ -67,7 +67,7 @@ tasks:
     cmds:
       - |        
         cat <<EOF > /boot/usercfg.txt
-        dtparam=i2c=on
+        dtparam=i2c_arm=on
         EOF
   set-fstab:
     cmds:
@@ -91,4 +91,5 @@ tasks:
       - |
         cat <<EOF > /etc/modules-load.d/i2c.conf
         i2c-dev
+        i2c-bcm2708
         EOF
