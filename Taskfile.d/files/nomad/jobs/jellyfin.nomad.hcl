@@ -3,9 +3,15 @@ job "dlna" {
 
   group "dlna-group" {
     network {
-      mode = "cni/bridge"
+      mode = "host"
       port "jellyfin" {
+        static = 8096
         to = 8096
+      }
+
+      port "dlna" {
+        static = 1900
+        to = 1900
       }
     }
 
@@ -14,6 +20,7 @@ job "dlna" {
 
       config {
         image = "docker.io/jellyfin/jellyfin:10.8.10"
+        host_network = true
         mounts = [{
           type    = "bind"
           source  = "/data/volumes/jellyfin/config"
@@ -24,6 +31,11 @@ job "dlna" {
           source  = "/data/volumes/jellyfin/cache"
           target  = "/cache"
           options = ["rbind", "rw"]
+        },{
+          type    = "bind"
+          source  = "/mnt/media"
+          target  = "/media"
+          options = ["rbind", "ro"]
         }]
       }
 
@@ -49,7 +61,7 @@ job "dlna" {
 
       resources {
         cpu    = 500
-        memory = 512
+        memory = 640
       }
     }
   }
