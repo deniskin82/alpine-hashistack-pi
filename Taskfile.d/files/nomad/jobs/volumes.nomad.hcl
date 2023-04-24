@@ -12,11 +12,15 @@ job "volumes" {
         mkdir -v -m 777 -p /data/volumes/netdata_cache \
           /data/volumes/netdata_data \
           /data/volumes/docker_registry/data \
-          /data/volumes/docker_cache/data
+          /data/volumes/docker_cache/data \
+          /data/volumes/jellyfin/cache \
+          /data/volumes/jellyfin/config
         chmod 0777 /data/volumes/netdata_cache \
           /data/volumes/netdata_data \
           /data/volumes/docker_registry/data \
-          /data/volumes/docker_cache/data
+          /data/volumes/docker_cache/data \
+          /data/volumes/jellyfin/cache \
+          /data/volumes/jellyfin/config
         sleep 10
         EOH
 
